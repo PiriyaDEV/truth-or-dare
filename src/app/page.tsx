@@ -238,13 +238,13 @@ export default function App() {
                 text="นำเข้าคำถาม"
                 type="secondary"
                 onClick={() => setImport(true)}
-                className="w-full max-w-none"
+                className="w-full max-w-none!"
               />
 
               <CommonBtn
                 text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
                 onClick={() => setMember(true)}
-                className="w-full max-w-none"
+                className="w-full max-w-none!"
               />
             </div>
           </div>
