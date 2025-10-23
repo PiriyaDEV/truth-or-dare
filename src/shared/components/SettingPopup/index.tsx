@@ -105,7 +105,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
             <h3 className="font-bold text-lg text-center">ตั้งค่าเริ่มต้น</h3>
 
             <div className="pt-4">
-              <p className="!text-[#4366f4] font-bold text-sm mb-2">
+              <p className="!text-[#DE3163] font-bold text-sm mb-2">
                 เปิดใช้งาน VAT{" "}
                 <span
                   className={
@@ -127,7 +127,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
             </div>
 
             <div className="py-4">
-              <p className="!text-[#4366f4] font-bold text-sm mb-2">VAT (%)</p>
+              <p className="!text-[#DE3163] font-bold text-sm mb-2">VAT (%)</p>
               <input
                 id="vat"
                 type="number"
@@ -144,7 +144,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
             </div>
 
             <div className="pt-4">
-              <p className="!text-[#4366f4] font-bold text-sm mb-2">
+              <p className="!text-[#DE3163] font-bold text-sm mb-2">
                 เปิดใช้งาน Service Charge{" "}
                 <span
                   className={
@@ -166,7 +166,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
             </div>
 
             <div className="py-4">
-              <p className="!text-[#4366f4] font-bold text-sm mb-2">
+              <p className="!text-[#DE3163] font-bold text-sm mb-2">
                 Service Charge (%)
               </p>
               <input
@@ -186,7 +186,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({
 
             <div className="flex justify-between mt-4">
               <button
-                className="btn bg-[#4366f4] btn-sm text-white w-full"
+                className="btn bg-[#DE3163] btn-sm text-white w-full"
                 onClick={handleSave}
               >
                 บันทึก

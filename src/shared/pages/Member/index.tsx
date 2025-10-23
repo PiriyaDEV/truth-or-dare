@@ -4,7 +4,6 @@ import { useState } from "react";
 import { TiDelete } from "react-icons/ti";
 
 import CommonBtn from "@/shared/components/CommonBtn";
-import { MEMBER_COLORS } from "@/app/lib/constants";
 import { MemberObj } from "@/app/lib/interface";
 import ConfirmPopup from "@/shared/components/ConfirmPopup";
 
@@ -61,15 +60,17 @@ export default function Member({
   };
 
   const renderFooter = () => (
-    <div className="container mx-auto px-4 flex justify-between gap-7 mt-6">
-      <CommonBtn text="เพิ่ม" className="w-[150px]" onClick={addMember} />
+    <div className="container mx-auto px-4 flex flex-col gap-5">
+      <div className="flex flex-col gap-4 w-full mt-4">
+        <CommonBtn text="เพิ่ม" className="w-full max-w-none" onClick={addMember} />
 
-      <CommonBtn
-        text="กลับ >"
-        type="secondary"
-        className="w-[150px]"
-        onClick={() => setIsMemberSet(false)}
-      />
+        <CommonBtn
+          text="กลับ >"
+          type="secondary"
+          className="w-full max-w-none mt-8"
+          onClick={() => setIsMemberSet(false)}
+        />
+      </div>
     </div>
   );
 

@@ -4,13 +4,3 @@ export interface MemberObj {
   customPaid?: number;
   gender: string;
 }
-
-export interface ItemObj {
-  itemName: string;
-  paidBy: string;
-  price?: number;
-  vatRate?: number;
-  serviceChargeRate?: number;
-  selectedMembers: MemberObj[];
-  isEqualSplit?: boolean;
-}

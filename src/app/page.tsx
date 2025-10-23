@@ -6,21 +6,36 @@ import CommonLoading from "@/shared/components/CommonLoading";
 import Member from "@/shared/pages/Member";
 import { MemberObj } from "./lib/interface";
 import { encodeBase64, getURLParams } from "./lib/utils";
-import { dareTasks, truthQuestions } from "@/shared/constants";
+import ImportQuestionsPopup from "@/shared/components/ImportQuestion";
+import defaultData from "./lib/default.json";
 
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMember, setMember] = useState(false);
   const [members, setMembers] = useState<MemberObj[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [questions, setQuestions] = useState<{
+    truthQuestions: any;
+    dareTasks: any;
+  }>({
+    truthQuestions: defaultData.truthQuestions,
+    dareTasks: defaultData.dareTasks,
+  });
+  const [isImport, setImport] = useState(false);
 
-  // Load from URL parameters
+  const [currentPlayer, setCurrentPlayer] = useState<MemberObj | null>(null);
+  const [result, setResult] = useState("");
+  const [hasAnswered, setHasAnswered] = useState(false);
+  const [lockedRandom, setLockedRandom] = useState(false);
+
+  // โหลดจาก URL parameters
   useEffect(() => {
     const { members: loadedMembers } = getURLParams();
     setMembers(loadedMembers);
     setIsLoaded(true);
   }, []);
 
-  // Update URL parameters when members or itemArr change
+  // อัปเดต URL parameters เมื่อสมาชิกเปลี่ยน
   useEffect(() => {
     if (!isLoaded) return;
 
@@ -29,123 +44,106 @@ export default function App() {
     window.history.replaceState({}, "", "?" + params.toString());
   }, [members, isLoaded]);
 
-  // Handle the deletion of a member
+  // handle imported questions
+  const handleImport = (data: any) => {
+    console.log("Imported JSON from child:", data);
+
+    setQuestions({
+      truthQuestions: data.truthQuestions || defaultData.truthQuestions,
+      dareTasks: data.dareTasks || defaultData.dareTasks,
+    });
+
+    setImport(false);
+  };
+
+  // จัดการการลบสมาชิก
   const handleDeleteMember = (deletedMember: MemberObj) => {
-    // Remove the member from the members list
     const updatedMembers = members.filter(
       (member) => member.name !== deletedMember.name
     );
     setMembers(updatedMembers);
   };
 
-  const renderBody = () => {
-    return (
-      <div className="flex flex-col gap-4 w-full mt-[190px]">
-        <div
-          style={{
-            paddingBottom: "150px",
-          }}
-        >
-          <div style={{ textAlign: "center", marginTop: "50px" }}>
-            <h2>Truth or Dare Game</h2>
-            <p>
-              Players ({members.length}):{" "}
-              {members.map((p) => p.name).join(", ")}
-            </p>
+  const getRandomItem = <T,>(arr: T[]): any =>
+    arr[Math.floor(Math.random() * arr.length)];
 
-            {members.length !== 0 && (
-              <>
-                <button
-                  onClick={handleClick}
-                  disabled={isLoading}
-                  style={{
-                    padding: "10px 20px",
-                    borderRadius: "8px",
-                    cursor: isLoading ? "not-allowed" : "pointer",
-                    opacity: isLoading ? 0.6 : 1,
-                  }}
-                >
-                  {isLoading ? "Spinning..." : "🎲 Random Truth or Dare"}
-                </button>
+  const getRandomPlayer = (): MemberObj | null =>
+    members.length > 0 ? getRandomItem(members) : null;
 
-                <div
-                  style={{
-                    marginTop: "30px",
-                    fontWeight: "bold",
-                    minHeight: "40px",
-                  }}
-                >
-                  {isLoading ? (
-                    <span style={{ fontStyle: "italic" }}>Thinking...</span>
-                  ) : (
-                    result
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    );
+  const handleStartTurn = () => {
+    if (members.length < 2) {
+      setResult("ต้องมีผู้เล่นอย่างน้อย 2 คน!");
+      return;
+    }
+
+    const player = getRandomPlayer();
+    setCurrentPlayer(player);
+    setResult("");
+    setHasAnswered(false);
   };
 
-  const renderFooter = () => (
-    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px]">
-      <div className="container mx-auto px-4 flex justify-center gap-7 mt-3">
-        <CommonBtn
-          text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
-          type="secondary"
-          onClick={() => setMember(true)}
-          className="w-full"
-        />
-      </div>
-    </div>
-  );
+  const generateQuestion = (type: "truth" | "dare") => {
+    if (!currentPlayer) return "";
 
-  const [result, setResult] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getRandomItem = <T,>(arr: T[]): T =>
-    arr[Math.floor(Math.random() * arr.length)];
-  const getRandomPlayer = (): MemberObj => getRandomItem(members);
-
-  const generateTruthOrDare = () => {
-    if (members.length < 2) return "You need at least 2 players!";
-
-    const type = Math.random() < 0.5 ? "truth" : "dare";
-    const isPair = Math.random() < 0.6; // 60% chance for 2 players
-
-    const player1 = getRandomPlayer();
+    const player1 = currentPlayer;
+    const isPair = Math.random() < 0.6;
     let text = "";
 
-    if (isPair) {
+    const truthList = questions.truthQuestions;
+    const dareList = questions.dareTasks;
+
+    if (isPair && members.length > 1) {
       const otherPlayers = members.filter((p) => p.name !== player1.name);
       const player2 = getRandomItem(otherPlayers);
-      const list = type === "truth" ? truthQuestions.pair : dareTasks.pair;
+      const list = type === "truth" ? truthList.pair : dareList.pair;
 
       text = getRandomItem(list)
         .replace("{name1}", player1.name)
         .replace("{name2}", player2.name);
     } else {
       const gender = player1.gender === "F" ? "F" : "M";
-      const list =
-        type === "truth" ? truthQuestions[gender] : dareTasks[gender];
+      const list = type === "truth" ? truthList[gender] : dareList[gender];
       text = getRandomItem(list).replace("{name}", player1.name);
     }
 
     return `${type.toUpperCase()}: ${text}`;
   };
 
-  const handleClick = () => {
+  const handleChoice = (choice: "truth" | "dare") => {
+    if (!currentPlayer) return;
+
     setIsLoading(true);
     setResult("");
 
-    // Simulate a "thinking" delay (1.5 seconds)
     setTimeout(() => {
-      const output = generateTruthOrDare();
-      setResult(output);
+      const question = generateQuestion(choice);
+      setResult(question);
       setIsLoading(false);
-    }, 2000);
+      setHasAnswered(true);
+      setLockedRandom(false);
+    }, 1200);
+  };
+
+  const handlePass = () => {
+    if (!currentPlayer) return;
+
+    setIsLoading(true);
+    setResult("");
+
+    setTimeout(() => {
+      const randomType = Math.random() < 0.5 ? "truth" : "dare";
+      const question = generateQuestion(randomType);
+      setResult(question);
+      setIsLoading(false);
+      setLockedRandom(true);
+    }, 1200);
+  };
+
+  const handleEndTurn = () => {
+    setCurrentPlayer(null);
+    setResult("");
+    setHasAnswered(false);
+    setLockedRandom(false);
   };
 
   if (!isLoaded) return <CommonLoading />;
@@ -161,8 +159,95 @@ export default function App() {
         />
       ) : (
         <>
-          {renderBody()}
-          {renderFooter()}
+          <div className="flex flex-col gap-4 w-full max-w-md text-center items-center justify-center min-h-screen mx-auto">
+            {!currentPlayer ? (
+              <>
+                <p>
+                  ผู้เล่น ({members.length} คน):{" "}
+                  {members.map((p) => p.name).join(", ")}
+                </p>
+                <CommonBtn
+                  text="🎲 เริ่มตาใหม่"
+                  type="primary"
+                  onClick={handleStartTurn}
+                  disabled={members.length < 2}
+                  className="mx-auto w-[200px]"
+                />
+              </>
+            ) : (
+              <div className="mt-4 flex flex-col gap-3 items-center">
+                <h3 className="text-lg font-bold">
+                  ถึงตาของ {currentPlayer.name}!
+                </h3>
+
+                {!hasAnswered && (
+                  <div className="flex gap-4 flex flex-col">
+                    <CommonBtn
+                      text="Truth"
+                      type="secondary"
+                      onClick={() => handleChoice("truth")}
+                      disabled={isLoading}
+                    />
+                    <CommonBtn
+                      text="Dare"
+                      type="secondary"
+                      onClick={() => handleChoice("dare")}
+                      disabled={isLoading}
+                    />
+                  </div>
+                )}
+
+                <div className="mt-5 min-h-[60px] font-semibold">
+                  {isLoading ? "กำลังคิด..." : result}
+                </div>
+
+                {hasAnswered && (
+                  <div className="flex gap-4 mt-4 flex flex-col">
+                    <CommonBtn
+                      text="ข้าม"
+                      type="secondary"
+                      onClick={handlePass}
+                      disabled={isLoading || lockedRandom}
+                    />
+                    <CommonBtn
+                      text="✅ จบตา"
+                      type="primary"
+                      onClick={handleEndTurn}
+                    />
+                  </div>
+                )}
+
+                {lockedRandom && (
+                  <p className="italic text-sm text-gray-500 mt-2">
+                    คุณข้ามครั้งก่อน! ไม่สามารถข้ามรอบถัดไปได้
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          <ImportQuestionsPopup
+            isOpen={isImport}
+            onImport={handleImport}
+            onCancel={() => setImport(false)}
+          />
+
+          <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px]">
+            <div className="container mx-auto px-4 flex flex-col justify-center gap-3 mt-3">
+              <CommonBtn
+                text="นำเข้าคำถาม"
+                type="secondary"
+                onClick={() => setImport(true)}
+                className="w-full max-w-none"
+              />
+
+              <CommonBtn
+                text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
+                onClick={() => setMember(true)}
+                className="w-full max-w-none"
+              />
+            </div>
+          </div>
         </>
       )}
     </div>

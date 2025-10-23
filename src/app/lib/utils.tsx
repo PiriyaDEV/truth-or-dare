@@ -1,5 +1,4 @@
 import { MemberObj } from "@/app/lib/interface";
-import { MODE } from "./constants";
 
 export const getMemberObjByName = (
   name: string,
@@ -45,7 +44,7 @@ export const getURLParams = () => {
     members: membersParam ? decodeBase64(membersParam) : [],
     itemArr: itemArrParam ? decodeBase64(itemArrParam) : [],
     billName: billNameParam ? decodeBase64(billNameParam) : "",
-    mode: modeParam ? decodeBase64(modeParam) : MODE.EDIT,
+    // mode: modeParam ? decodeBase64(modeParam) : MODE.EDIT,
     setting: settingParam
       ? decodeBase64(settingParam)
       : {
