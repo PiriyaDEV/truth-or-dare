@@ -128,41 +128,55 @@ export default function App() {
     }
   };
 
-  const renderHeader = () => (
-    <div className="grid grid-cols-2 text-center">
-      {["list", "summary"].map((view) => (
+  const renderBody = () => {
+    return (
+      <div className="flex flex-col gap-4 w-full mt-[190px]">
         <div
-          key={view}
-          onClick={() => setScreen(view as "list" | "summary")}
-          className={`mx-4 cursor-pointer pb-2 transition-colors duration-200 border-b-[3px] ${
-            screen === view
-              ? "!text-[#4366f4] font-bold border-[#4366f4]"
-              : "!text-gray-500 border-transparent"
-          }`}
+          style={{
+            paddingBottom: "150px",
+          }}
         >
-          <div className="flex justify-center items-center gap-4">
-            {view === "list" ? <FaList /> : <FaTable />}
-            {view === "list" ? "รายการ" : "ดูสรุป"}
+          <div style={{ textAlign: "center", marginTop: "50px" }}>
+            <h2>Truth or Dare Game</h2>
+            <p>
+              Players ({members.length}):{" "}
+              {members.map((p) => p.name).join(", ")}
+            </p>
+
+            {members.length !== 0 && (
+              <>
+                <button
+                  onClick={handleClick}
+                  disabled={isLoading}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "8px",
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    opacity: isLoading ? 0.6 : 1,
+                  }}
+                >
+                  {isLoading ? "Spinning..." : "🎲 Random Truth or Dare"}
+                </button>
+
+                <div
+                  style={{
+                    marginTop: "30px",
+                    fontWeight: "bold",
+                    minHeight: "40px",
+                  }}
+                >
+                  {isLoading ? (
+                    <span style={{ fontStyle: "italic" }}>Thinking...</span>
+                  ) : (
+                    result
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
-      ))}
-    </div>
-  );
-
-  const renderBody = () => {
-    if (screen === "list") {
-      return (
-        <Calculate
-          settings={settings}
-          members={members}
-          itemArr={itemArr}
-          setItemArr={setItemArr}
-          mode={mode!}
-        />
-      );
-    } else {
-      return <Summary members={members} itemArr={itemArr} />;
-    }
+      </div>
+    );
   };
 
   const renderModal = () =>
@@ -239,22 +253,15 @@ export default function App() {
     </div>
   );
 
-  const [players] = useState<Player[]>([
-    { name: "A", gender: "M" },
-    { name: "B", gender: "F" },
-    { name: "C", gender: "M" },
-    { name: "D", gender: "F" },
-  ]);
-
   const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const getRandomItem = <T,>(arr: T[]): T =>
     arr[Math.floor(Math.random() * arr.length)];
-  const getRandomPlayer = (): Player => getRandomItem(players);
+  const getRandomPlayer = (): MemberObj => getRandomItem(members);
 
   const generateTruthOrDare = () => {
-    if (players.length < 2) return "You need at least 2 players!";
+    if (members.length < 2) return "You need at least 2 players!";
 
     const type = Math.random() < 0.5 ? "truth" : "dare";
     const isPair = Math.random() < 0.3; // 30% chance for 2 players
@@ -263,7 +270,7 @@ export default function App() {
     let text = "";
 
     if (isPair) {
-      const otherPlayers = players.filter((p) => p.name !== player1.name);
+      const otherPlayers = members.filter((p) => p.name !== player1.name);
       const player2 = getRandomItem(otherPlayers);
       const list = type === "truth" ? truthQuestions.pair : dareTasks.pair;
 
@@ -307,7 +314,7 @@ export default function App() {
         <>
           <div className="fixed top-[81px] left-1/2 -translate-x-1/2 z-50 bg-white w-full sm:w-[450px] pt-2">
             <div className="container mx-auto px-4 flex-col flex gap-5">
-              <div className="flex items-center justify-between gap-2">
+              {/* <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-3 whitespace-nowrap">
                   <h1 className="font-bold">ชื่อบิล : </h1>
                   {mode === MODE.EDIT ? (
@@ -337,11 +344,12 @@ export default function App() {
                     className="text-[24px] mr-1 cursor-pointer text-[#333333]"
                   />
                 )}
-              </div>
+              </div> */}
 
-              {renderHeader()}
+              {/* {renderHeader()} */}
             </div>
           </div>
+
           {renderBody()}
           {renderModal()}
           {renderFooter()}

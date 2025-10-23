@@ -2,6 +2,7 @@ export interface MemberObj {
   name: string;
   color: string;
   customPaid?: number;
+  gender: string;
 }
 
 export interface ItemObj {

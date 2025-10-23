@@ -22,20 +22,22 @@ export default function Member({
   onDeleteMember,
 }: MemberProps) {
   const [name, setName] = useState("");
+  const [gender, setGender] = useState<"M" | "F" | "">("");
   const [error, setError] = useState(false);
   const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(
     null
   );
 
-  const getColorByIndex = (index: number): string => {
-    return MEMBER_COLORS[index % MEMBER_COLORS.length];
-  };
-
   const addMember = () => {
     const trimmed = name.trim();
-    if (!trimmed) return setError(true);
+    if (!trimmed || !gender) {
+      setError(true);
+      return;
+    }
 
-    const isDuplicate = members.some((member) => member.name === trimmed);
+    const isDuplicate = members.some(
+      (member) => member.name.toLowerCase() === trimmed.toLowerCase()
+    );
     if (isDuplicate) {
       alert("ชื่อสมาชิกนี้มีอยู่แล้ว");
       return;
@@ -43,22 +45,43 @@ export default function Member({
 
     setMembers([
       ...members,
-      { name: trimmed, color: getColorByIndex(members.length) },
+      {
+        name: trimmed,
+        gender,
+        color: getColorByGender(gender),
+      },
     ]);
     setName("");
+    setGender("");
     setError(false);
   };
 
+  const getColorByGender = (g: "M" | "F") => {
+    return g === "M" ? "#3B82F6" : "#EC4899";
+  };
+
+  const renderFooter = () => (
+    <div className="container mx-auto px-4 flex justify-between gap-7 mt-6">
+      <CommonBtn text="เพิ่ม" className="w-[150px]" onClick={addMember} />
+
+      <CommonBtn
+        text="กลับ >"
+        type="secondary"
+        className="w-[150px]"
+        onClick={() => setIsMemberSet(false)}
+      />
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-10 pb-20 mt-[140px]">
-      {" "}
-      {/* Added padding-bottom for the fixed footer */}
       <div className="fixed z-[50] top-[80px] left-1/2 -translate-x-1/2 bg-white w-full sm:w-[450px] px-4">
         <h1 className="font-bold mt-3 pb-2">
           สมาชิกมีใครบ้าง ?{" "}
           <span className="!text-gray-400">({members.length} คน)</span>
         </h1>
       </div>
+
       <div
         className={`flex gap-4 flex-wrap w-full ${
           members.length > 4 ? "justify-center" : ""
@@ -75,9 +98,14 @@ export default function Member({
               className="relative w-16 h-16 rounded-full flex justify-center items-center"
               style={{ backgroundColor: m.color }}
             >
-              <span className="text-xs font-semibold truncate text-white">
+              <span className="text-xs font-semibold truncate text-white text-center">
                 {m.name}
+                <br />
+                <span className="text-[10px]">
+                  {m.gender === "M" ? "♂" : "♀"}
+                </span>
               </span>
+
               <div
                 className="bg-white rounded-full absolute -top-1 -right-1 h-5 w-5 flex justify-center items-center cursor-pointer"
                 onClick={() => setConfirmDeleteIndex(i)}
@@ -93,9 +121,7 @@ export default function Member({
                     onDeleteMember(m);
                     setConfirmDeleteIndex(null);
                   }}
-                  onCancel={() => {
-                    setConfirmDeleteIndex(null);
-                  }}
+                  onCancel={() => setConfirmDeleteIndex(null)}
                 />
               )}
             </div>
@@ -109,15 +135,16 @@ export default function Member({
           </div>
         )}
       </div>
-      {/* Fixed Button Section */}
+
+      {/* Fixed Bottom Section */}
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px] z-10">
-        <div className="container mx-auto px-4 flex flex-col gap-7">
+        <div className="container mx-auto px-4 flex flex-col gap-5">
           <div className="flex items-center justify-center gap-2">
             <input
               type="text"
               placeholder="ใส่ชื่อสมาชิก"
               className={`input input-bordered w-full ${
-                error ? "border-red-500" : ""
+                error && !name ? "border-red-500" : ""
               }`}
               value={name}
               onChange={(e) => {
@@ -125,17 +152,39 @@ export default function Member({
                 setError(false);
               }}
             />
-            <CommonBtn text="เพิ่ม" onClick={addMember} className="!w-fit" />
           </div>
-          <CommonBtn
-            text="กลับ >"
-            type="secondary"
-            onClick={() => {
-              setIsMemberSet(false);
-            }}
-            className="!max-w-none"
-          />
+
+          {/* Gender Selector */}
+          <div className="flex justify-center gap-4">
+            <button
+              className={`px-4 py-2 rounded-full border w-full ${
+                gender === "M"
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "border-gray-300"
+              }`}
+              onClick={() => setGender("M")}
+            >
+              ชาย
+            </button>
+            <button
+              className={`px-4 py-2 rounded-full border w-full ${
+                gender === "F"
+                  ? "bg-pink-500 text-white border-pink-500"
+                  : "border-gray-300"
+              }`}
+              onClick={() => setGender("F")}
+            >
+              หญิง
+            </button>
+          </div>
+          {error && !gender && (
+            <p className="text-red-500 text-center text-sm">
+              กรุณาเลือกเพศด้วย
+            </p>
+          )}
         </div>
+
+        {renderFooter()}
       </div>
     </div>
   );

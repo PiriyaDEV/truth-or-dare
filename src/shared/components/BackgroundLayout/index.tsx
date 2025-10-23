@@ -16,8 +16,8 @@ const sarabun = Sarabun({
 });
 
 export const metadata: Metadata = {
-  title: "Mother Calc",
-  description: "แม่ๆคิดเงินให้หน่อย 👩🏻🙏🏻",
+  title: "Truth Or Dare!",
+  description: "truth or daree",
   openGraph: {
     images: `https://mother-calc.netlify.app/images/metaImg.png`,
   },
@@ -29,7 +29,7 @@ const BackgroundLayout: FC<BackgroundLayoutProps> = ({ children }) => {
       <body className="antialiased">
         <div className="bg-cover bg-center flex flex-col items-center sm:bg-gray-100 min-h-screen">
           <div className="fixed w-full sm:max-w-[450px] top-0 bg-white z-[98] text-center font-bold py-4 mb-2 text-[22px] text-[#4366f4]">
-            แม่ๆ คิดเงินให้หน่อย
+            Truth or Dare!
             <div className="text-xs text-center text-[#c5c6c7]">
               Made by{" "}
               <span
