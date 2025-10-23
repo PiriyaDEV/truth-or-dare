@@ -18,9 +18,9 @@ const sarabun = Sarabun({
 export const metadata: Metadata = {
   title: "Truth Or Dare!",
   description: "truth or daree",
-  openGraph: {
-    images: `https://mother-calc.netlify.app/images/metaImg.png`,
-  },
+  // openGraph: {
+  //   images: `https://mother-calc.netlify.app/images/metaImg.png`,
+  // },
 };
 
 const BackgroundLayout: FC<BackgroundLayoutProps> = ({ children }) => {
