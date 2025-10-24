@@ -7,7 +7,9 @@ import Member from "@/shared/pages/Member";
 import { MemberObj } from "./lib/interface";
 import { encodeBase64, getURLParams } from "./lib/utils";
 import ImportQuestionsPopup from "@/shared/components/ImportQuestion";
-import defaultData from "./lib/default.json";
+import defaultTruth from "./lib/truth.json";
+import defaultDare from "./lib/dare.json";
+import { FaCog } from "react-icons/fa";
 
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -15,11 +17,11 @@ export default function App() {
   const [members, setMembers] = useState<MemberObj[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [questions, setQuestions] = useState<{
-    truthQuestions: any;
-    dareTasks: any;
+    truthQuestions: string[];
+    dareTasks: string[];
   }>({
-    truthQuestions: defaultData.truthQuestions,
-    dareTasks: defaultData.dareTasks,
+    truthQuestions: defaultTruth,
+    dareTasks: defaultDare,
   });
   const [isImport, setImport] = useState(false);
 
@@ -47,12 +49,10 @@ export default function App() {
   // handle imported questions
   const handleImport = (data: any) => {
     console.log("Imported JSON from child:", data);
-
     setQuestions({
-      truthQuestions: data.truthQuestions || defaultData.truthQuestions,
-      dareTasks: data.dareTasks || defaultData.dareTasks,
+      truthQuestions: data.truthQuestions || defaultTruth,
+      dareTasks: data.dareTasks || defaultDare,
     });
-
     setImport(false);
   };
 
@@ -64,7 +64,7 @@ export default function App() {
     setMembers(updatedMembers);
   };
 
-  const getRandomItem = <T,>(arr: T[]): any =>
+  const getRandomItem = <T,>(arr: T[]): T =>
     arr[Math.floor(Math.random() * arr.length)];
 
   const getRandomPlayer = (): MemberObj | null =>
@@ -86,24 +86,17 @@ export default function App() {
     if (!currentPlayer) return "";
 
     const player1 = currentPlayer;
-    const isPair = Math.random() < 0.6;
-    let text = "";
+    const list =
+      type === "truth" ? questions.truthQuestions : questions.dareTasks;
+    let text = getRandomItem(list);
 
-    const truthList = questions.truthQuestions;
-    const dareList = questions.dareTasks;
+    // replace placeholders
+    text = text.replace("{name1}", player1.name);
 
-    if (isPair && members.length > 1) {
+    if (text.includes("{name2}") && members.length > 1) {
       const otherPlayers = members.filter((p) => p.name !== player1.name);
       const player2 = getRandomItem(otherPlayers);
-      const list = type === "truth" ? truthList.pair : dareList.pair;
-
-      text = getRandomItem(list)
-        .replace("{name1}", player1.name)
-        .replace("{name2}", player2.name);
-    } else {
-      const gender = player1.gender === "F" ? "F" : "M";
-      const list = type === "truth" ? truthList[gender] : dareList[gender];
-      text = getRandomItem(list).replace("{name}", player1.name);
+      text = text.replace("{name2}", player2.name);
     }
 
     return `${type.toUpperCase()}: ${text}`;
@@ -159,7 +152,14 @@ export default function App() {
         />
       ) : (
         <>
-          <div className="flex flex-col gap-4 w-full max-w-md text-center items-center justify-center min-h-screen mx-auto">
+          <div className="relative flex flex-col gap-4 w-full max-w-md text-center items-center justify-center min-h-screen mx-auto">
+            <div className="absolute top-[20px] z-[99] right-[10px]">
+              <FaCog
+                onClick={() => setImport(true)}
+                className="text-[24px] mr-1 cursor-pointer text-[#333333]"
+              />
+            </div>
+
             {!currentPlayer ? (
               <>
                 <p>
@@ -181,7 +181,7 @@ export default function App() {
                 </h3>
 
                 {!hasAnswered && (
-                  <div className="flex gap-4 flex flex-col">
+                  <div className="flex flex-col gap-4">
                     <CommonBtn
                       text="Truth"
                       type="secondary"
@@ -202,7 +202,7 @@ export default function App() {
                 </div>
 
                 {hasAnswered && (
-                  <div className="flex gap-4 mt-4 flex flex-col">
+                  <div className="flex flex-col gap-4 mt-4">
                     <CommonBtn
                       text="ข้าม"
                       type="secondary"
@@ -229,22 +229,17 @@ export default function App() {
           <ImportQuestionsPopup
             isOpen={isImport}
             onImport={handleImport}
+            truthQuestions={questions.truthQuestions}
+            dareTasks={questions.dareTasks}
             onCancel={() => setImport(false)}
           />
 
           <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px]">
             <div className="container mx-auto px-4 flex flex-col justify-center gap-3 mt-3">
               <CommonBtn
-                text="นำเข้าคำถาม"
-                type="secondary"
-                onClick={() => setImport(true)}
-                className="w-full max-w-none!"
-              />
-
-              <CommonBtn
                 text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
                 onClick={() => setMember(true)}
-                className="w-full max-w-none!"
+                className="w-full"
               />
             </div>
           </div>

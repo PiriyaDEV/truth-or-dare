@@ -3,37 +3,57 @@ import CommonBtn from "../CommonBtn";
 
 interface ImportQuestionsPopupProps {
   isOpen: boolean;
-  onImport: (data: any) => void; // callback ส่ง JSON กลับ parent
+  truthQuestions: string[];
+  dareTasks: string[];
+  onImport: (data: { truthQuestions: string[]; dareTasks: string[] }) => void;
   onCancel: () => void;
 }
 
 const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
   isOpen,
+  truthQuestions,
+  dareTasks,
   onImport,
   onCancel,
 }) => {
-  const [jsonInput, setJsonInput] = useState("");
+  const [truthInput, setTruthInput] = useState("");
+  const [dareInput, setDareInput] = useState("");
   const [error, setError] = useState("");
 
+  // Set default values when popup opens
   useEffect(() => {
-    if (!isOpen) {
-      setJsonInput("");
+    if (isOpen) {
+      setTruthInput(JSON.stringify(truthQuestions, null, 2));
+      setDareInput(JSON.stringify(dareTasks, null, 2));
+      setError("");
+    } else {
+      setTruthInput("");
+      setDareInput("");
       setError("");
     }
-  }, [isOpen]);
+  }, [isOpen, truthQuestions, dareTasks]);
 
   const handleSave = () => {
     try {
-      const parsed = JSON.parse(jsonInput);
-      onImport(parsed); // ส่ง JSON กลับ parent
-      onCancel();
+      const parsedTruth = JSON.parse(truthInput);
+      const parsedDare = JSON.parse(dareInput);
+
+      if (!Array.isArray(parsedTruth) || !Array.isArray(parsedDare)) {
+        throw new Error("JSON ต้องเป็น array");
+      }
+
+      onImport({
+        truthQuestions: parsedTruth,
+        dareTasks: parsedDare,
+      });
+
+      handleCancel();
     } catch (e) {
       setError("JSON ไม่ถูกต้อง โปรดตรวจสอบอีกครั้ง");
     }
   };
 
   const handleCancel = () => {
-    setJsonInput("");
     setError("");
     onCancel();
   };
@@ -44,9 +64,7 @@ const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
         <div
           className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-[100]"
           onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              handleCancel();
-            }
+            if (e.target === e.currentTarget) handleCancel();
           }}
         >
           <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-lg m-4">
@@ -54,12 +72,22 @@ const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
               นำเข้าคำถาม JSON
             </h3>
 
+            <label className="font-semibold mb-1">Truth Questions (JSON Array)</label>
             <textarea
-              className="w-full h-64 p-2 border rounded mb-2"
-              value={jsonInput}
-              onChange={(e) => setJsonInput(e.target.value)}
-              placeholder="วาง JSON ของ truthQuestions หรือ dareTasks ที่นี่"
+              className="w-full h-32 p-2 border rounded mb-4"
+              value={truthInput}
+              onChange={(e) => setTruthInput(e.target.value)}
+              placeholder='เช่น ["{name1} ...", "{name1} และ {name2} ..."]'
             />
+
+            <label className="font-semibold mb-1">Dare Tasks (JSON Array)</label>
+            <textarea
+              className="w-full h-32 p-2 border rounded mb-2"
+              value={dareInput}
+              onChange={(e) => setDareInput(e.target.value)}
+              placeholder='เช่น ["{name1} ...", "{name1} และ {name2} ..."]'
+            />
+
             {error && <p className="text-red-500 mb-2">{error}</p>}
 
             <div className="flex flex-col gap-2 mt-4">
@@ -71,7 +99,6 @@ const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
               />
               <CommonBtn
                 text="บันทึก"
-                // type="secondary"
                 onClick={handleSave}
                 className="w-full max-w-none"
               />
