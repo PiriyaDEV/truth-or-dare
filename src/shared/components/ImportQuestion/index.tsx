@@ -58,6 +58,12 @@ const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
     onCancel();
   };
 
+  const handleClearAll = () => {
+    setTruthInput("");
+    setDareInput("");
+    setError("");
+  };
+
   return (
     <>
       {isOpen && (
@@ -72,7 +78,9 @@ const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
               นำเข้าคำถาม JSON
             </h3>
 
-            <label className="font-semibold mb-1">Truth Questions (JSON Array)</label>
+            <label className="font-semibold mb-1">
+              Truth Questions (JSON Array)
+            </label>
             <textarea
               className="w-full h-32 p-2 border rounded mb-4"
               value={truthInput}
@@ -80,7 +88,9 @@ const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
               placeholder='เช่น ["{name1} ...", "{name1} และ {name2} ..."]'
             />
 
-            <label className="font-semibold mb-1">Dare Tasks (JSON Array)</label>
+            <label className="font-semibold mb-1">
+              Dare Tasks (JSON Array)
+            </label>
             <textarea
               className="w-full h-32 p-2 border rounded mb-2"
               value={dareInput}
@@ -91,6 +101,13 @@ const ImportQuestionsPopup: React.FC<ImportQuestionsPopupProps> = ({
             {error && <p className="text-red-500 mb-2">{error}</p>}
 
             <div className="flex flex-col gap-2 mt-4">
+              <CommonBtn
+                text="ลบทั้งหมด"
+                type="secondary"
+                onClick={handleClearAll}
+                className="w-full max-w-none mb-6"
+              />
+
               <CommonBtn
                 text="ยกเลิก"
                 type="secondary"
