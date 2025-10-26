@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CommonBtn from "@/shared/components/CommonBtn";
 import CommonLoading from "@/shared/components/CommonLoading";
 import { MemberObj } from "./lib/interface";
-import { encodeBase64, getURLParams } from "../../lib/utils";
 import ImportQuestionsPopup from "@/shared/components/ImportQuestion";
 import defaultTruth from "./lib/truth.json";
 import defaultDare from "./lib/dare.json";
@@ -13,9 +12,11 @@ import { FaCog } from "react-icons/fa";
 // Wrap questions with isPlayed
 type Question = { text: string; isPlayed?: boolean };
 
-export default function TruthOrDate() {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [members, setMembers] = useState<MemberObj[]>([]);
+type TruthOrDateProps = {
+  members: MemberObj[];
+};
+
+export default function TruthOrDate({ members }: TruthOrDateProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [questions, setQuestions] = useState<{
     truthQuestions: Question[];
@@ -30,22 +31,6 @@ export default function TruthOrDate() {
   const [result, setResult] = useState("");
   const [hasAnswered, setHasAnswered] = useState(false);
   const [lockedRandom, setLockedRandom] = useState(false);
-
-  // Load members from URL params
-  useEffect(() => {
-    const { members: loadedMembers } = getURLParams();
-    setMembers(loadedMembers);
-    setIsLoaded(true);
-  }, []);
-
-  // Update URL params when members change
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    const params = new URLSearchParams();
-    params.set("members", encodeBase64(members));
-    window.history.replaceState({}, "", "?" + params.toString());
-  }, [members, isLoaded]);
 
   // Handle imported questions
   const handleImport = (data: any) => {
@@ -166,8 +151,6 @@ export default function TruthOrDate() {
     setHasAnswered(false);
     setLockedRandom(false);
   };
-
-  if (!isLoaded) return <CommonLoading />;
 
   return (
     <div className="flex flex-col gap-5">

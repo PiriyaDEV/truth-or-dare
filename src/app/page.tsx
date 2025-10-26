@@ -6,6 +6,7 @@ import { MemberObj } from "./lib/interface";
 import Member from "@/shared/pages/Member";
 import { encodeBase64, getURLParams } from "./lib/utils";
 import TruthOrDare from "./game/truth-or-dare";
+import CommonLoading from "@/shared/components/CommonLoading";
 
 export default function MainPage() {
   const [isMember, setMember] = useState(false);
@@ -41,11 +42,11 @@ export default function MainPage() {
   const renderGameComponent = () => {
     switch (activeGame) {
       case "Truth or Dare":
-        return <TruthOrDare />;
+        return <TruthOrDare members={members} />;
       case "Dice Now":
-        // return <DiceNow members={members} />;
+      // return <DiceNow members={members} />;
       case "PitaPato":
-        // return <PitaPato members={members} />;
+      // return <PitaPato members={members} />;
       default:
         return null;
     }
@@ -66,6 +67,8 @@ export default function MainPage() {
       </div>
     );
   };
+
+  if (!isLoaded) return <CommonLoading />;
 
   return (
     <div className="flex flex-col gap-6 items-center justify-center min-h-screen p-4">
@@ -104,15 +107,17 @@ export default function MainPage() {
         </div>
       )}
 
-      {!activeGame && <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px]">
-        <div className="container mx-auto px-4 flex flex-col justify-center gap-3 mt-3">
-          <CommonBtn
-            text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
-            onClick={() => setMember(true)}
-            className="w-full"
-          />
+      {!activeGame && (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px]">
+          <div className="container mx-auto px-4 flex flex-col justify-center gap-3 mt-3">
+            <CommonBtn
+              text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
+              onClick={() => setMember(true)}
+              className="w-full"
+            />
+          </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }
