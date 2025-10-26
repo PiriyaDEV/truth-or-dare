@@ -11,17 +11,20 @@ import defaultTruth from "./lib/truth.json";
 import defaultDare from "./lib/dare.json";
 import { FaCog } from "react-icons/fa";
 
+// Wrap questions with isPlayed
+type Question = { text: string; isPlayed?: boolean };
+
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMember, setMember] = useState(false);
   const [members, setMembers] = useState<MemberObj[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [questions, setQuestions] = useState<{
-    truthQuestions: string[];
-    dareTasks: string[];
+    truthQuestions: Question[];
+    dareTasks: Question[];
   }>({
-    truthQuestions: defaultTruth,
-    dareTasks: defaultDare,
+    truthQuestions: defaultTruth.map((t) => ({ text: t, isPlayed: false })),
+    dareTasks: defaultDare.map((d) => ({ text: d, isPlayed: false })),
   });
   const [isImport, setImport] = useState(false);
 
@@ -30,14 +33,14 @@ export default function App() {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [lockedRandom, setLockedRandom] = useState(false);
 
-  // โหลดจาก URL parameters
+  // Load members from URL params
   useEffect(() => {
     const { members: loadedMembers } = getURLParams();
     setMembers(loadedMembers);
     setIsLoaded(true);
   }, []);
 
-  // อัปเดต URL parameters เมื่อสมาชิกเปลี่ยน
+  // Update URL params when members change
   useEffect(() => {
     if (!isLoaded) return;
 
@@ -46,55 +49,86 @@ export default function App() {
     window.history.replaceState({}, "", "?" + params.toString());
   }, [members, isLoaded]);
 
-  // handle imported questions
+  // Handle imported questions
   const handleImport = (data: any) => {
-    console.log("Imported JSON from child:", data);
     setQuestions({
-      truthQuestions: data.truthQuestions || defaultTruth,
-      dareTasks: data.dareTasks || defaultDare,
+      truthQuestions: (data.truthQuestions || defaultTruth).map(
+        (t: string) => ({ text: t, isPlayed: false })
+      ),
+      dareTasks: (data.dareTasks || defaultDare).map((d: string) => ({
+        text: d,
+        isPlayed: false,
+      })),
     });
     setImport(false);
   };
 
-  // จัดการการลบสมาชิก
   const handleDeleteMember = (deletedMember: MemberObj) => {
-    const updatedMembers = members.filter(
-      (member) => member.name !== deletedMember.name
-    );
-    setMembers(updatedMembers);
+    setMembers(members.filter((m) => m.name !== deletedMember.name));
   };
 
   const getRandomItem = <T,>(arr: T[]): T =>
     arr[Math.floor(Math.random() * arr.length)];
 
-  const getRandomPlayer = (): MemberObj | null =>
-    members.length > 0 ? getRandomItem(members) : null;
+  const getRandomPlayer = (): MemberObj | null => {
+    if (members.length === 0) return null;
+
+    if (!currentPlayer) return getRandomItem(members);
+
+    // 80% chance to NOT pick the same player
+    if (Math.random() < 0.8) {
+      const otherPlayers = members.filter((p) => p.name !== currentPlayer.name);
+      if (otherPlayers.length > 0) {
+        return getRandomItem(otherPlayers);
+      }
+    }
+
+    // fallback: allow current player (20% chance)
+    return currentPlayer;
+  };
 
   const handleStartTurn = () => {
     if (members.length < 2) {
       setResult("ต้องมีผู้เล่นอย่างน้อย 2 คน!");
       return;
     }
-
-    const player = getRandomPlayer();
-    setCurrentPlayer(player);
+    setCurrentPlayer(getRandomPlayer());
     setResult("");
     setHasAnswered(false);
   };
 
+  // Generate question with isPlayed check
   const generateQuestion = (type: "truth" | "dare") => {
     if (!currentPlayer) return "";
 
-    const player1 = currentPlayer;
+    const player = currentPlayer;
     const list =
       type === "truth" ? questions.truthQuestions : questions.dareTasks;
-    let text = getRandomItem(list);
 
-    // replace placeholders
-    text = text.replace("{name1}", player1.name);
+    // Filter unplayed questions
+    let available = list.filter((q) => !q.isPlayed);
+    // If all played, reset
+    if (available.length === 0) {
+      available = list.map((q) => ({ ...q, isPlayed: false }));
+    }
+
+    const selected = getRandomItem(available);
+
+    // Mark as played
+    const updatedList = list.map((q) =>
+      q.text === selected.text ? { ...q, isPlayed: true } : q
+    );
+
+    setQuestions((prev) => ({
+      ...prev,
+      [type === "truth" ? "truthQuestions" : "dareTasks"]: updatedList,
+    }));
+
+    // Replace placeholders
+    let text = selected.text.replace("{name1}", player.name);
 
     if (text.includes("{name2}") && members.length > 1) {
-      const otherPlayers = members.filter((p) => p.name !== player1.name);
+      const otherPlayers = members.filter((p) => p.name !== player.name);
       const player2 = getRandomItem(otherPlayers);
       text = text.replace("{name2}", player2.name);
     }
@@ -229,8 +263,8 @@ export default function App() {
           <ImportQuestionsPopup
             isOpen={isImport}
             onImport={handleImport}
-            truthQuestions={questions.truthQuestions}
-            dareTasks={questions.dareTasks}
+            truthQuestions={questions.truthQuestions.map((q) => q.text)}
+            dareTasks={questions.dareTasks.map((q) => q.text)}
             onCancel={() => setImport(false)}
           />
 
