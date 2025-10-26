@@ -57,7 +57,7 @@ export default function MainPage() {
     if (!activeGame) return null;
 
     return (
-      <div className="w-full max-w-md p-6 rounded-md mt-4 h-full">
+      <div className="w-full max-w-md p-6 rounded-md mt-4 h-[calc(100vh-100px)] overflow-hidden">
         {renderGameComponent()}
         <CommonBtn
           text="กลับไปเลือกเกม"
@@ -72,7 +72,7 @@ export default function MainPage() {
   if (!isLoaded) return <CommonLoading />;
 
   return (
-    <div className="flex flex-col gap-6 items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col gap-6 items-center justify-center min-h-screen p-4 overflow-hidden">
       {isMember ? (
         <Member
           members={members}
@@ -109,7 +109,7 @@ export default function MainPage() {
       )}
 
       {!activeGame && (
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px]">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px] mb-10">
           <div className="container mx-auto px-4 flex flex-col justify-center gap-3 mt-3">
             <CommonBtn
               text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
