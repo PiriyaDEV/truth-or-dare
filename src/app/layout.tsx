@@ -4,8 +4,8 @@ import BackgroundLayout from "@/shared/components/BackgroundLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Truth Or Dare!",
-  description: "truth or daree",
+  title: "เกมวงเหล้า!",
+  description: "ไม่เมาไม่เลิกจ้า",
   // openGraph: {
   //   images: `https://mother-calc.netlify.app/images/metaImg.png`,
   // },

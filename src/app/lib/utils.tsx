@@ -1,4 +1,4 @@
-import { MemberObj } from "@/app/lib/interface";
+import { MemberObj } from "@/app/game/truth-or-dare/lib/interface";
 
 export const getMemberObjByName = (
   name: string,

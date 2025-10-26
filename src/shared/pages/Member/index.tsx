@@ -4,7 +4,7 @@ import { useState } from "react";
 import { TiDelete } from "react-icons/ti";
 
 import CommonBtn from "@/shared/components/CommonBtn";
-import { MemberObj } from "@/app/lib/interface";
+import { MemberObj } from "@/app/game/truth-or-dare/lib/interface";
 import ConfirmPopup from "@/shared/components/ConfirmPopup";
 
 interface MemberProps {
@@ -62,7 +62,11 @@ export default function Member({
   const renderFooter = () => (
     <div className="container mx-auto px-4 flex flex-col gap-5">
       <div className="flex flex-col gap-4 w-full mt-4">
-        <CommonBtn text="เพิ่ม" className="w-full max-w-none" onClick={addMember} />
+        <CommonBtn
+          text="เพิ่ม"
+          className="w-full max-w-none"
+          onClick={addMember}
+        />
 
         <CommonBtn
           text="กลับ >"

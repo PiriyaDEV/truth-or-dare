@@ -16,8 +16,8 @@ const sarabun = Sarabun({
 });
 
 export const metadata: Metadata = {
-  title: "Truth Or Dare!",
-  description: "truth or daree",
+  title: "เกมวงเหล้า!",
+  description: "ไม่เมาไม่เลิกจ้า",
   // openGraph: {
   //   images: `https://mother-calc.netlify.app/images/metaImg.png`,
   // },
@@ -29,7 +29,7 @@ const BackgroundLayout: FC<BackgroundLayoutProps> = ({ children }) => {
       <body className="antialiased">
         <div className="bg-cover bg-center flex flex-col items-center sm:bg-gray-100 min-h-screen">
           <div className="fixed w-full sm:max-w-[450px] top-0 bg-white z-[98] text-center font-bold py-4 mb-2 text-[22px] text-[#DE3163]">
-            Truth or Dare!
+            เกมวงเหล้า!
             <div className="text-xs text-center text-[#c5c6c7]">
               Made by{" "}
               <span
