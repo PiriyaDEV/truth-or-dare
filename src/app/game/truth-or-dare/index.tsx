@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import CommonBtn from "@/shared/components/CommonBtn";
-import CommonLoading from "@/shared/components/CommonLoading";
 import { MemberObj } from "./lib/interface";
 import ImportQuestionsPopup from "@/shared/components/ImportQuestion";
 import defaultTruth from "./lib/truth.json";

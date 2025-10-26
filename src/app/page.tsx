@@ -7,6 +7,7 @@ import Member from "@/shared/pages/Member";
 import { encodeBase64, getURLParams } from "./lib/utils";
 import TruthOrDare from "./game/truth-or-dare";
 import CommonLoading from "@/shared/components/CommonLoading";
+import RandomLight from "./game/random-light";
 
 export default function MainPage() {
   const [isMember, setMember] = useState(false);
@@ -16,7 +17,7 @@ export default function MainPage() {
 
   const games = [
     { name: "Truth or Dare", minMembers: 2 },
-    // { name: "Dice Now", minMembers: 1 },
+    { name: "สุ่มโดนใคร คนนั้นกิน!", minMembers: 2 },
     // { name: "PitaPato", minMembers: 3 },
   ];
 
@@ -43,8 +44,8 @@ export default function MainPage() {
     switch (activeGame) {
       case "Truth or Dare":
         return <TruthOrDare members={members} />;
-      case "Dice Now":
-      // return <DiceNow members={members} />;
+      case "สุ่มโดนใคร คนนั้นกิน!":
+      return <RandomLight members={members} />;
       case "PitaPato":
       // return <PitaPato members={members} />;
       default:
