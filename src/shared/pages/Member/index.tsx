@@ -80,7 +80,7 @@ export default function Member({
 
   return (
     <div className="flex flex-col gap-10 pb-20 mt-[140px]">
-      <div className="fixed z-[50] top-[80px] left-1/2 -translate-x-1/2 bg-white w-full sm:w-[450px] px-4">
+      <div className="fixed z-[50] top-[105px] left-1/2 -translate-x-1/2 bg-white w-full sm:w-[450px] px-4">
         <h1 className="font-bold mt-3 pb-2">
           สมาชิกมีใครบ้าง ?{" "}
           <span className="!text-gray-400">({members.length} คน)</span>

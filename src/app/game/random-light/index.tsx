@@ -52,7 +52,7 @@ export default function RandomLight({ members }: RandomLightProps) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="relative flex flex-col gap-10 w-full max-w-md text-center items-center justify-center h-[calc(100vh-200px)] mx-auto">
+      <div className="relative flex flex-col gap-10 w-full max-w-md text-center items-center justify-center mx-auto">
         <div>
           <h2 className="text-xl font-bold">สุ่มโดนใคร คนนั้นกิน!</h2>
 
