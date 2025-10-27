@@ -8,6 +8,7 @@ import { encodeBase64, getURLParams } from "./lib/utils";
 import TruthOrDare from "./game/truth-or-dare";
 import CommonLoading from "@/shared/components/CommonLoading";
 import RandomLight from "./game/random-light";
+import BombGame from "./game/bomb";
 
 export default function MainPage() {
   const [isMember, setMember] = useState(false);
@@ -18,6 +19,7 @@ export default function MainPage() {
   const games = [
     { name: "Truth or Dare", minMembers: 2 },
     { name: "สุ่มโดนใคร คนนั้นกิน!", minMembers: 2 },
+    { name: "Bomb!", minMembers: 2 },
   ];
 
   useEffect(() => {
@@ -43,6 +45,8 @@ export default function MainPage() {
         return <TruthOrDare members={members} />;
       case "สุ่มโดนใคร คนนั้นกิน!":
         return <RandomLight members={members} />;
+      case "Bomb!":
+        return <BombGame members={members} />;
       default:
         return null;
     }
