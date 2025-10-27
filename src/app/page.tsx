@@ -57,7 +57,7 @@ export default function MainPage() {
   return (
     <div className="relative flex flex-col min-h-screen justify-between p-4 items-center">
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center w-full max-w-md overflow-auto justify-center">
+      <div className="flex-1 flex flex-col items-center w-full max-w-md justify-center">
         {isMember ? (
           <Member
             members={members}
@@ -79,7 +79,7 @@ export default function MainPage() {
                       onClick={() => setActiveGame(game.name)}
                       className={`aspect-square p-4 break-words whitespace-normal flex items-center justify-center rounded-2xl text-white text-lg font-semibold cursor-pointer text-center transition-all ${
                         members.length < game.minMembers
-                          ? "bg-[#c5c6c7] cursor-not-allowed"
+                          ? "bg-[#c5c6c7] pointer-events-none"
                           : "bg-[#DE3163] hover:bg-blue-700"
                       }`}
                     >
@@ -97,7 +97,7 @@ export default function MainPage() {
             )}
 
             {/* Bottom bar */}
-            <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px] border-[1px]">
+            <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px] border-t-[1px]">
               <div className="container mx-auto px-4 flex flex-col justify-center gap-3">
                 {activeGame ? (
                   <CommonBtn
