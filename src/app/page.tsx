@@ -64,27 +64,30 @@ export default function MainPage() {
         ) : (
           <>
             {!activeGame && (
-              <div className="w-full rounded-md mt-4 h-[calc(100vh-300px)] flex flex-col gap-2 items-center justify-center">
+              <div className="w-full rounded-md h-[calc(100vh-300px)] flex flex-col gap-2 items-center">
                 <h1 className="text-3xl font-bold mb-6 text-center">
                   🎮 เลือกเกม
                 </h1>
-                <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   {games.map((game) => (
-                    <CommonBtn
+                    <div
                       key={game.name}
-                      text={game.name}
-                      type="primary"
-                      className="w-full"
-                      disabled={members.length < game.minMembers}
                       onClick={() => setActiveGame(game.name)}
-                    />
+                      className={`aspect-square p-4 break-words whitespace-normal flex items-center justify-center rounded-2xl text-white text-lg font-semibold cursor-pointer text-center transition-all ${
+                        members.length < game.minMembers
+                          ? "bg-[#c5c6c7] cursor-not-allowed"
+                          : "bg-[#DE3163] hover:bg-blue-700"
+                      }`}
+                    >
+                      {game.name}
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
             {activeGame && (
-              <div className="relative w-full rounded-md mt-4 h-[calc(100vh-300px)] flex items-center justify-center">
+              <div className="relative w-full rounded-md h-[calc(100vh-300px)] flex items-center justify-center">
                 {renderGameComponent()}
               </div>
             )}

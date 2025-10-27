@@ -154,7 +154,7 @@ export default function TruthOrDate({ members }: TruthOrDateProps) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-4 w-full max-w-md text-center items-center justify-center mx-auto">
-        <div className="absolute top-[20px] z-[99] right-[10px]">
+        <div className="absolute top-[0px] z-[99] right-[0px]">
           <FaCog
             onClick={() => setImport(true)}
             className="text-[24px] mr-1 cursor-pointer text-[#333333]"
