@@ -95,28 +95,30 @@ export default function MainPage() {
                 {renderGameComponent()}
               </div>
             )}
+
+            {/* Bottom bar */}
+            <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px] border-[1px]">
+              <div className="container mx-auto px-4 flex flex-col justify-center gap-3">
+                {activeGame ? (
+                  <CommonBtn
+                    text="กลับไปเลือกเกม"
+                    type="secondary"
+                    onClick={() => setActiveGame(null)}
+                    className="w-full"
+                  />
+                ) : (
+                  <CommonBtn
+                    text={
+                      members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"
+                    }
+                    onClick={() => setMember(true)}
+                    className="w-full"
+                  />
+                )}
+              </div>
+            </div>
           </>
         )}
-      </div>
-
-      {/* Bottom bar */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-white py-5 w-full sm:w-[450px] border-[1px]">
-        <div className="container mx-auto px-4 flex flex-col justify-center gap-3">
-          {activeGame ? (
-            <CommonBtn
-              text="กลับไปเลือกเกม"
-              type="secondary"
-              onClick={() => setActiveGame(null)}
-              className="w-full"
-            />
-          ) : (
-            <CommonBtn
-              text={members.length === 0 ? "+ เพิ่มสมาชิก" : "จัดการสมาชิก"}
-              onClick={() => setMember(true)}
-              className="w-full"
-            />
-          )}
-        </div>
       </div>
     </div>
   );
